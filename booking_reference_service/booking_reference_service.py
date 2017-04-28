@@ -33,6 +33,7 @@ def main(args):
     else:
         starting_point = 123456789
 
+    cherrypy.config.update({"server.socket_host" : "0.0.0.0"})
     cherrypy.config.update({"server.socket_port" : 8082})
     cherrypy.quickstart(BookingReferenceService(starting_point))
 
