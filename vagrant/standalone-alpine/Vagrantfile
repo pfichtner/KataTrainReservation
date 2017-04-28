@@ -1,0 +1,23 @@
+$script = <<EOF
+REPOUSER=pfichtner
+
+apk update 
+apk add git
+pip install cherrypy
+
+cd /opt/ && git clone https://github.com/$REPOUSER/KataTrainReservation.git
+EOF
+
+$run = <<EOF
+cd /opt/KataTrainReservation/booking_reference_service && python3 booking_reference_service.py &
+cd /opt/KataTrainReservation/train_data_service && python3 start_service.py &
+EOF
+
+Vagrant.configure("2") do |config|
+  config.vm.box = "maier/alpine-3.4-x86_64"
+  config.vm.network "forwarded_port", host: 8081, guest: 8081, auto_correct: true
+  config.vm.network "forwarded_port", host: 8082, guest: 8082, auto_correct: true
+  config.vm.provision "shell", inline: $script
+  config.vm.provision "shell", inline: $run, run: "always", privileged: false
+end
+
